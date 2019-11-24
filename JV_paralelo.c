@@ -8,6 +8,7 @@ void comunicacion(int pid,int estadoActual,MPI_Comm celula, MPI_Status stat ){
 //int estadoActual;
 int vecinos=0;
 int fuente=pid-7;
+ int  estadoAd;
 //Empieza recibir
 MPI_Recv(&estadoAd,1, MPI_INT,fuente,&etiqueta,MPI_COMM_WORLD,&stat);
    printf("P %d recibe de P%d estado: %c\n",pid,fuente,estadoAd);
@@ -106,7 +107,7 @@ void imprimir_tablero(){
 
 
 int main(int argc, char **argv){
-  int i,j,np,pid,iteraciones;
+  int i,j,k,np,pid,iteraciones;
   int **matriz,**matrizAct;
   int buffer[36];
   double Ti,Tf;
@@ -144,11 +145,11 @@ else
       Ti=MPI_Wtime();
       for(k=0;k<=iteraciones;k++){
         //SCATTER
-        printf("P0--> Enviando datos a P%i:"pid); 
-        MPI_Scatter(matriz,36,MPI_INT,&buffer1[pid],36,MPI_INIT,0,MPI_COMM_WORLD);//podria el buffer ir sin &
+        printf("P0--> Enviando datos a P%i:",pid); 
+        MPI_Scatter(matriz,36,MPI_Init,&buffer1[pid],36,MPI_INIT,0,MPI_COMM_WORLD);//podria el buffer ir sin &
 
 
-        imprimir_tablero();
+        
         comunicacion(pid,buffer[pid],MPI_COM_WORLD , MPI_Status stat);
         //actualiza_tablero();
     }//fin iteraciones
