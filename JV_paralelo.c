@@ -5,9 +5,9 @@
 
 
 void comunicacion(int pid,int estadoActual,MPI_Comm celula, MPI_Status stat ){
-int estadoActual;
+//int estadoActual;
 int vecinos=0;
-fuente=pid-7;
+int fuente=pid-7;
 //Empieza recibir
 MPI_Recv(&estadoAd,1, MPI_INT,fuente,&etiqueta,MPI_COMM_WORLD,&stat);
    printf("P %d recibe de P%d estado: %c\n",pid,fuente,estadoAd);
@@ -91,8 +91,9 @@ fuente=pid+7;
 }//end comunicacion
 
 void imprimir_tablero(){
-   for(i=0;i<7;++){
-         for(j=0;j<7;++){
+   int i,j;
+   for(i=0;i<7;i++){
+         for(j=0;j<7;j++){
             printf("\t %i",matriz[i][j]);
          }
       printf("\n");
@@ -107,7 +108,7 @@ void imprimir_tablero(){
 int main(int argc, char **argv){
   int i,j,np,pid,iteraciones;
   int **matriz,**matrizAct;
-  int buffer[49];
+  int buffer[36];
   double Ti,Tf;
   printf("Juego de la vida:\n");
   MPI_Status stat;
@@ -134,8 +135,8 @@ else
           *(matrizAct+i)=(int *)malloc(6*sizeof(int));
       }
     //llenando tablero
-       for(i=0;i<7;++){
-         for(j=0;j<7;++){
+       for(i=0;i<7;i++){
+         for(j=0;j<7;j++){
             matriz[i][j]=rand()%2;
          }
        }
