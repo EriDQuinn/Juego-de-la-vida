@@ -90,7 +90,15 @@ fuente=pid+7;
 
 }//end comunicacion
 
+void imprimir_tablero(){
+   for(i=0;i<7;++){
+         for(j=0;j<7;++){
+            printf("\t %i",matriz[i][j]);
+         }
+      printf("\n");
+       }
 
+ }
 
 
 
@@ -98,8 +106,9 @@ fuente=pid+7;
 
 int main(int argc, char **argv){
   int i,j,np,pid,iteraciones;
-  int **matriz;
+  int **matriz,**matrizAct;
   int buffer[49];
+  double Ti,Tf;
   printf("Juego de la vida:\n");
   MPI_Status stat;
   MPI_Init(&argc,&argv);
@@ -109,25 +118,45 @@ int main(int argc, char **argv){
 //iniciando tablero
 if(np<=1){
  printf("Ño\n");
-
+ printf("Ño\n");
 }
 else
 {
-printf("Ingresa las iteraciones que quieres realizar:");
-scanf("%d",&iteraciones);
-for(k=0;k<=iteraciones;k++){
-  //SCATTER
-  comunicacion(pid,buffer[pid],MPI_COM_WORLD , MPI_Status stat);
+   printf("Ingresa las iteraciones que quieres realizar:");
+   scanf("%d",&iteraciones);
+   //Creando tablero
+      matriz=(int**)malloc(6*sizeof(int *));
+      for(i=0;i<7;++){
+         *(matriz+i)=(int *)malloc(6*sizeof(int));
+      }
+      matrizAct=(int**)malloc(6*sizeof(int *));
+      for(i=0;i<7;++){
+          *(matrizAct+i)=(int *)malloc(6*sizeof(int));
+      }
+    //llenando tablero
+       for(i=0;i<7;++){
+         for(j=0;j<7;++){
+            matriz[i][j]=rand()%2;
+         }
+       }
+      imprimir_tablero(matriz);
+      Ti=MPI_Wtime();
+      for(k=0;k<=iteraciones;k++){
+        //SCATTER
+        printf("P0--> Enviando datos a P%i:"pid); 
+        MPI_Scatter(matriz,36,MPI_INT,&buffer1[pid],36,MPI_INIT,0,MPI_COMM_WORLD);//podria el buffer ir sin &
 
 
-}
+        imprimir_tablero();
+        comunicacion(pid,buffer[pid],MPI_COM_WORLD , MPI_Status stat);
+        //actualiza_tablero();
+    }//fin iteraciones
+    Tf=MPI_Wtime();
+   
+}//fin else
 
-
-
-}
-
-
-MPI_finalize();
+printf("Tiempo de ejecucion: %f",Ti-Tf);
+MPI_Finalize();
 return 0;
 
 }
